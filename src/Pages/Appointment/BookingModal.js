@@ -1,17 +1,40 @@
 import React from "react";
 import { format } from "date-fns";
+import { useAuthState } from "react-firebase-hooks/auth";
+import auth from "../../firebase.init";
 
-const BookingModal = ({ treatment, date,setTreatment }) => {
-  const { name,slots,_id } = treatment;
+const BookingModal = ({ treatment, date, setTreatment }) => {
+  const { name, slots, _id } = treatment;
+  const [user, loading, error] = useAuthState(auth);
+  const formatedDate = format(date, "PP");
+  console.log(user);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const timeSlot = event.target.slot.value;
+    const mobile = event.target.mobile.value;
 
-const handleSubmit= event =>{
-    event.preventDefault()
-    const date1 = event.target.date.value;
-    const timeSlot = event.target.slot.value
-    const name = event.target.name.value
-    console.log(date1,timeSlot,name);
-    setTreatment(null)
-}
+    const booking = {
+      treatmentID: _id,
+      treatmentName: name,
+      date: formatedDate,
+      slot: timeSlot,
+      patient: user.email,
+      patientName: user.displayName,
+      Mobile: mobile,
+    };
+    fetch('http://localhost:5000/booking', {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(booking),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setTreatment(null);
+      });
+  };
   return (
     <div>
       <label for="Booking-modal" class="btn modal-button">
@@ -30,8 +53,10 @@ const handleSubmit= event =>{
           </label>
           <h3 class="text-lg font-bold"> Booking Treatment: {name}</h3>
 
-
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 justify-items-center mt-4">
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 gap-4 justify-items-center mt-4"
+          >
             <input
               type="text"
               disabled
@@ -40,30 +65,35 @@ const handleSubmit= event =>{
               class="input input-bordered w-full max-w-xs"
             />
             <select name="slot" class="select select-bordered w-full max-w-xs">
-             
-               {
-                   slots.map(slot=> <option>{slot}</option>)
-               }
-              
+              {slots.map((slot, index) => (
+                <option key={index} value={slot}>
+                  {slot}
+                </option>
+              ))}
             </select>
             <input
               type="text"
-            name="name"
+              name="name"
               placeholder="Full Name"
+              disabled
+              value={user?.displayName || ""}
               class="input input-bordered w-full max-w-xs"
             />
             <input
-              type="text"
-            name="date"
-              placeholder="Phone Number"
-              class="input input-bordered w-full max-w-xs"
-            />
-            <input
+              disabled
+              value={user?.email || ""}
               type="email"
               name="email"
               placeholder="example@.com"
               class="input input-bordered w-full max-w-xs"
             />
+            <input
+              type="text"
+              name="mobile"
+              placeholder="Phone Number"
+              class="input input-bordered w-full max-w-xs"
+            />
+
             <input
               type="submit"
               value="Submit"
