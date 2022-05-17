@@ -22,7 +22,7 @@ const BookingModal = ({ treatment, date, setTreatment }) => {
       patientName: user.displayName,
       Mobile: mobile,
     };
-    fetch('http://localhost:5000/booking', {
+    fetch("http://localhost:5000/booking", {
       method: "POST",
       headers: {
         "content-type": "application/json",
