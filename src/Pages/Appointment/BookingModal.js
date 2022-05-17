@@ -22,7 +22,7 @@ const BookingModal = ({ treatment, date, setTreatment }) => {
       patientName: user.displayName,
       Mobile: mobile,
     };
-    fetch("http://localhost:5000/booking", {
+    fetch("https://enigmatic-waters-37781.herokuapp.com/booking", {
       method: "POST",
       headers: {
         "content-type": "application/json",

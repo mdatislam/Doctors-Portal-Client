@@ -9,7 +9,7 @@ const AvailableAppointment = ({ date }) => {
   useEffect(()=>{
     // https://enigmatic-waters-37781.herokuapp.com/appointments
     // http://localhost:5000/appointments
-    fetch(' https://enigmatic-waters-37781.herokuapp.com/appointments')
+    fetch('https://enigmatic-waters-37781.herokuapp.com/appointments')
     .then(res=>res.json())
     .then(data => setServices(data))
   },[]);
