@@ -2,11 +2,12 @@ import React from "react";
 import { format } from "date-fns";
 import { useAuthState } from "react-firebase-hooks/auth";
 import auth from "../../firebase.init";
+import { toast } from "react-toastify";
 
-const BookingModal = ({ treatment, date, setTreatment }) => {
+const BookingModal = ({ treatment, date, setTreatment,refetch }) => {
   const { name, slots, _id } = treatment;
   const [user, loading, error] = useAuthState(auth);
-  const formatedDate = format(date, "PP");
+  const formattedDate = format(date, "PP");
   console.log(user);
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -16,13 +17,13 @@ const BookingModal = ({ treatment, date, setTreatment }) => {
     const booking = {
       treatmentID: _id,
       treatmentName: name,
-      date: formatedDate,
+      date: formattedDate,
       slot: timeSlot,
       patient: user.email,
       patientName: user.displayName,
       Mobile: mobile,
     };
-    fetch("https://enigmatic-waters-37781.herokuapp.com/booking", {
+    fetch("http://localhost:5000/booking", {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -31,13 +32,20 @@ const BookingModal = ({ treatment, date, setTreatment }) => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
+        if(data.success){
+          toast(`Your Booking submit successfully on date ${formattedDate} at ${timeSlot}` )
+        }
+        else{
+          toast.error(`Already have an appointment on ${data?.booking.date} at slot ${data?.booking.slot}` )
+        }
+       console.log(data);
+       refetch();
         setTreatment(null);
       });
   };
   return (
     <div>
-      <label for="Booking-modal" class="btn modal-button">
+      <label htmlFor="Booking-modal" class="btn modal-button">
         open modal
       </label>
 
