@@ -1,14 +1,17 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthState } from 'react-firebase-hooks/auth';
 import auth from './../../../firebase.init';
 import { signOut } from "firebase/auth";
 
 const Nav = () => {
+  const navigate= useNavigate()
   const [user]=useAuthState(auth)
   const LogOut =()=>{
     signOut(auth)
+    navigate('/Login')
     localStorage.removeItem('Access Token')
+
   }
     const menuItems=
     <>
@@ -20,7 +23,12 @@ const Nav = () => {
               user && <li><Link to='/DashBoard'>DashBoard</Link></li>
            }
             <li><Link to='/Contact'>ContactUs</Link></li>
-            <li>{ user ? <button className="text-Green-500 bg-red-300" onClick={LogOut}>SignOut</button>:<Link to='/Login'>Login</Link>}</li>
+            <li>{ user ? 
+            <div className="flex">
+              <button className="text-Green-500 bg-red-300" onClick={LogOut}>SignOut</button>
+              <span>{user.displayName}</span>
+            </div> 
+            :<Link to='/Login'>Login</Link>}</li>
     </>
   return (
     <div>
